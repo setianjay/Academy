@@ -5,6 +5,7 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.setianjay.academy.adapter.AcademyAdapter
 import com.setianjay.academy.data.CourseEntity
@@ -32,7 +33,8 @@ class AcademyFragment : Fragment() {
 
     private fun setupRecycleView(){
         if (activity != null){
-            val academies: List<CourseEntity> = DataDummy.generateDummyCourses()
+            val viewModel = ViewModelProvider(this, ViewModelProvider.NewInstanceFactory())[AcademyViewModel::class.java]
+            val academies: List<CourseEntity> = viewModel.getCourses()
             val academyAdapter = AcademyAdapter().apply {
                 this.setAcademies(academies)
             }

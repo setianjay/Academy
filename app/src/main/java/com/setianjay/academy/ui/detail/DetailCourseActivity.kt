@@ -3,6 +3,7 @@ package com.setianjay.academy.ui.detail
 import android.content.Intent
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.bumptech.glide.Glide
@@ -14,7 +15,6 @@ import com.setianjay.academy.data.CourseEntity
 import com.setianjay.academy.databinding.ActivityDetailCourseBinding
 import com.setianjay.academy.databinding.ContentDetailCourseBinding
 import com.setianjay.academy.ui.reader.CourseReaderActivity
-import com.setianjay.academy.utils.DataDummy
 
 class DetailCourseActivity : AppCompatActivity() {
 
@@ -35,6 +35,7 @@ class DetailCourseActivity : AppCompatActivity() {
     }
 
     private fun setupRecycleView() {
+        val viewModel = ViewModelProvider(this, ViewModelProvider.NewInstanceFactory())[DetailCourseViewModel::class.java]
         val detailCourseAdapter = DetailCourseAdapter()
 
         val extras = intent.extras
@@ -42,14 +43,13 @@ class DetailCourseActivity : AppCompatActivity() {
         if (extras != null) {
             val courseId = extras.getString(EXTRA_COURSE)
             if (courseId != null) {
-                val modules = DataDummy.generateDummyModules(courseId)
-                detailCourseAdapter.setModules(modules)
+                viewModel.setSelectedCourse(courseId)
 
-                for (courses in DataDummy.generateDummyCourses()) {
-                    if (courses.courseId == courseId) {
-                        populateCourse(courses)
-                    }
-                }
+                val course = viewModel.getCourse()
+                populateCourse(course)
+
+                val modules = viewModel.getModules()
+                detailCourseAdapter.setModules(modules)
 
                 detailContentBinding.rvModule.apply {
                     val dividerItemDecoration = DividerItemDecoration(context, DividerItemDecoration.VERTICAL)

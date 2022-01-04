@@ -2,6 +2,7 @@ package com.setianjay.academy.ui.reader
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import androidx.lifecycle.ViewModelProvider
 import com.setianjay.academy.R
 import com.setianjay.academy.ui.reader.content.ModuleContentFragment
 import com.setianjay.academy.ui.reader.list.ModuleListFragment
@@ -15,6 +16,8 @@ class CourseReaderActivity : AppCompatActivity(), CourseReaderCallback {
         if (bundle != null) {
             val courseId = bundle.getString(EXTRA_COURSE_ID)
             if (courseId != null) {
+                val viewModel = ViewModelProvider(this, ViewModelProvider.NewInstanceFactory())[CourseReaderViewModel::class.java]
+                viewModel.selectedCourse(courseId)
                 populateFragment()
             }
         }

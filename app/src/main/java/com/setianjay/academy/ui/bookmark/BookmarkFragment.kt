@@ -6,6 +6,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.core.app.ShareCompat
+import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.setianjay.academy.R
 import com.setianjay.academy.adapter.BookmarkAdapter
@@ -32,7 +33,8 @@ class BookmarkFragment : Fragment(), BookmarkAdapter.IOnBookmarkAdapter {
     }
 
     private fun setupRecycleView(){
-        val academies = DataDummy.generateDummyCourses()
+        val viewModel = ViewModelProvider(this, ViewModelProvider.NewInstanceFactory())[BookmarkViewModel::class.java]
+        val academies = viewModel.getBookmarks()
 
         val bookmarkAdapter = BookmarkAdapter(this)
         bookmarkAdapter.setAcademies(academies)

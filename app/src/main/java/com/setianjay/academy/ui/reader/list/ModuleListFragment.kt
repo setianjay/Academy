@@ -6,6 +6,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.setianjay.academy.adapter.ModuleListAdapter
@@ -14,6 +15,7 @@ import com.setianjay.academy.data.ModuleEntity
 import com.setianjay.academy.databinding.FragmentModuleListBinding
 import com.setianjay.academy.ui.reader.CourseReaderActivity
 import com.setianjay.academy.ui.reader.CourseReaderCallback
+import com.setianjay.academy.ui.reader.CourseReaderViewModel
 import com.setianjay.academy.utils.DataDummy
 
 class ModuleListFragment : Fragment(), MyAdapterClickListener {
@@ -22,6 +24,7 @@ class ModuleListFragment : Fragment(), MyAdapterClickListener {
 
     private lateinit var adapter: ModuleListAdapter
     private lateinit var callback: CourseReaderCallback
+    private lateinit var viewModel: CourseReaderViewModel
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
@@ -39,8 +42,11 @@ class ModuleListFragment : Fragment(), MyAdapterClickListener {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        viewModel = ViewModelProvider(requireActivity(), ViewModelProvider.NewInstanceFactory())[CourseReaderViewModel::class.java]
         adapter = ModuleListAdapter(this)
-        populateRecycleView(DataDummy.generateDummyModules("a14"))
+
+        val modules = viewModel.getModules()
+        populateRecycleView(modules)
     }
 
     private fun populateRecycleView(modules: List<ModuleEntity>){
@@ -57,6 +63,7 @@ class ModuleListFragment : Fragment(), MyAdapterClickListener {
 
     override fun onItemClicked(position: Int, moduleId: String) {
         callback.moveTo(position, moduleId)
+        viewModel.selectedModule(moduleId)
     }
 
     override fun onDestroy() {
