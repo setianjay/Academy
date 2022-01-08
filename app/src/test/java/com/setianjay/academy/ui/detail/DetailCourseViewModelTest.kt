@@ -1,20 +1,31 @@
 package com.setianjay.academy.ui.detail
 
+import com.setianjay.academy.data.source.remote.repository.AcademyRepository
 import com.setianjay.academy.utils.DataDummy
 import org.junit.Assert.*
 
 import org.junit.Before
 import org.junit.Test
+import org.junit.runner.RunWith
+import org.mockito.Mock
+import org.mockito.Mockito.`when`
+import org.mockito.Mockito.verify
+import org.mockito.junit.MockitoJUnitRunner
 
+@RunWith(MockitoJUnitRunner::class)
 class DetailCourseViewModelTest {
     private lateinit var viewModel: DetailCourseViewModel
-    private val dummyCourses = DataDummy.generateDummyCourses()
-    private val courseId = dummyCourses[0].courseId
+
+    @Mock
+    private lateinit var academyRepository: AcademyRepository
+
+    private val dummyCourses = DataDummy.generateDummyCourses()[0]
+    private val courseId = dummyCourses.courseId
     private val dummyModules = DataDummy.generateDummyModules(courseId)
 
     @Before
     fun setUp() {
-        viewModel = DetailCourseViewModel()
+        viewModel = DetailCourseViewModel(academyRepository)
         viewModel.setSelectedCourse(courseId)
     }
 
@@ -23,13 +34,15 @@ class DetailCourseViewModelTest {
      * */
     @Test
     fun getCourse() {
+        `when`(academyRepository.getDetailCourse(courseId)).thenReturn(dummyCourses)
         val course = viewModel.getCourse()
+        verify(academyRepository).getDetailCourse(courseId)
         assertNotNull(course)
-        assertEquals(dummyCourses[0].courseId, course.courseId)
-        assertEquals(dummyCourses[0].title, course.title)
-        assertEquals(dummyCourses[0].imagePath, course.imagePath)
-        assertEquals(dummyCourses[0].description, course.description)
-        assertEquals(dummyCourses[0].deadline, course.deadline)
+        assertEquals(dummyCourses.courseId, course.courseId)
+        assertEquals(dummyCourses.title, course.title)
+        assertEquals(dummyCourses.imagePath, course.imagePath)
+        assertEquals(dummyCourses.description, course.description)
+        assertEquals(dummyCourses.deadline, course.deadline)
     }
 
     /**
@@ -37,7 +50,9 @@ class DetailCourseViewModelTest {
      * */
     @Test
     fun getModules(){
+        `when`(academyRepository.getAllModules(courseId)).thenReturn(dummyModules)
         val modules = viewModel.getModules()
+        verify(academyRepository).getAllModules(courseId)
         assertNotNull(modules)
         assertArrayEquals(this.dummyModules.toTypedArray(), modules.toTypedArray())
     }
