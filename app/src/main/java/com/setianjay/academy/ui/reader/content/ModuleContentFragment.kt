@@ -26,7 +26,7 @@ class ModuleContentFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         if (activity != null){
-            val viewModel = ViewModelProvider(requireActivity(), ViewModelProvider.NewInstanceFactory())[CourseReaderViewModel::class.java]
+            val viewModel = ViewModelProvider(requireActivity())[CourseReaderViewModel::class.java]
             val content = viewModel.getSelectedModule()
             populateWebView(content)
         }

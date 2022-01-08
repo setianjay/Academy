@@ -119,7 +119,7 @@ class AcademyRepository private constructor(private val remoteDataSource: Remote
 
         for (i in modules) {
             if (moduleId == i.moduleId) {
-                val moduleEntity = ModuleEntity(
+                module = ModuleEntity(
                     i.moduleId,
                     i.courseId,
                     i.title,

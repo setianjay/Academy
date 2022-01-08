@@ -6,6 +6,7 @@ import androidx.lifecycle.ViewModelProvider
 import com.setianjay.academy.R
 import com.setianjay.academy.ui.reader.content.ModuleContentFragment
 import com.setianjay.academy.ui.reader.list.ModuleListFragment
+import com.setianjay.academy.ui.viewmodelfactory.ViewModelFactory
 
 class CourseReaderActivity : AppCompatActivity(), CourseReaderCallback {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -16,7 +17,8 @@ class CourseReaderActivity : AppCompatActivity(), CourseReaderCallback {
         if (bundle != null) {
             val courseId = bundle.getString(EXTRA_COURSE_ID)
             if (courseId != null) {
-                val viewModel = ViewModelProvider(this, ViewModelProvider.NewInstanceFactory())[CourseReaderViewModel::class.java]
+                val factory = ViewModelFactory.getInstance(this)
+                val viewModel = ViewModelProvider(this, factory)[CourseReaderViewModel::class.java]
                 viewModel.selectedCourse(courseId)
                 populateFragment()
             }

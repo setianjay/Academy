@@ -12,6 +12,7 @@ import com.setianjay.academy.R
 import com.setianjay.academy.adapter.BookmarkAdapter
 import com.setianjay.academy.data.CourseEntity
 import com.setianjay.academy.databinding.FragmentBookmarkBinding
+import com.setianjay.academy.ui.viewmodelfactory.ViewModelFactory
 import com.setianjay.academy.utils.DataDummy
 
 class BookmarkFragment : Fragment(), BookmarkAdapter.IOnBookmarkAdapter {
@@ -33,7 +34,8 @@ class BookmarkFragment : Fragment(), BookmarkAdapter.IOnBookmarkAdapter {
     }
 
     private fun setupRecycleView(){
-        val viewModel = ViewModelProvider(this, ViewModelProvider.NewInstanceFactory())[BookmarkViewModel::class.java]
+        val factory = ViewModelFactory.getInstance(requireActivity())
+        val viewModel = ViewModelProvider(this, factory)[BookmarkViewModel::class.java]
         val academies = viewModel.getBookmarks()
 
         val bookmarkAdapter = BookmarkAdapter(this)

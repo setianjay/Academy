@@ -16,7 +16,6 @@ import com.setianjay.academy.databinding.FragmentModuleListBinding
 import com.setianjay.academy.ui.reader.CourseReaderActivity
 import com.setianjay.academy.ui.reader.CourseReaderCallback
 import com.setianjay.academy.ui.reader.CourseReaderViewModel
-import com.setianjay.academy.utils.DataDummy
 
 class ModuleListFragment : Fragment(), MyAdapterClickListener {
     private var _binding: FragmentModuleListBinding? = null
@@ -42,7 +41,7 @@ class ModuleListFragment : Fragment(), MyAdapterClickListener {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        viewModel = ViewModelProvider(requireActivity(), ViewModelProvider.NewInstanceFactory())[CourseReaderViewModel::class.java]
+        viewModel = ViewModelProvider(requireActivity())[CourseReaderViewModel::class.java]
         adapter = ModuleListAdapter(this)
 
         val modules = viewModel.getModules()

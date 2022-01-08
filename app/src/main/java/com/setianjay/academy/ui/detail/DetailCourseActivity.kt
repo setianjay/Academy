@@ -15,6 +15,7 @@ import com.setianjay.academy.data.CourseEntity
 import com.setianjay.academy.databinding.ActivityDetailCourseBinding
 import com.setianjay.academy.databinding.ContentDetailCourseBinding
 import com.setianjay.academy.ui.reader.CourseReaderActivity
+import com.setianjay.academy.ui.viewmodelfactory.ViewModelFactory
 
 class DetailCourseActivity : AppCompatActivity() {
 
@@ -35,7 +36,8 @@ class DetailCourseActivity : AppCompatActivity() {
     }
 
     private fun setupRecycleView() {
-        val viewModel = ViewModelProvider(this, ViewModelProvider.NewInstanceFactory())[DetailCourseViewModel::class.java]
+        val factory = ViewModelFactory.getInstance(this)
+        val viewModel = ViewModelProvider(this, factory)[DetailCourseViewModel::class.java]
         val detailCourseAdapter = DetailCourseAdapter()
 
         val extras = intent.extras
