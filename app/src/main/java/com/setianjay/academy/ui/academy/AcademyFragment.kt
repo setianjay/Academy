@@ -1,17 +1,15 @@
 package com.setianjay.academy.ui.academy
 
 import android.os.Bundle
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.setianjay.academy.adapter.AcademyAdapter
-import com.setianjay.academy.data.CourseEntity
 import com.setianjay.academy.databinding.FragmentAcademyBinding
 import com.setianjay.academy.ui.viewmodelfactory.ViewModelFactory
-import com.setianjay.academy.utils.DataDummy
 
 
 class AcademyFragment : Fragment() {
@@ -34,12 +32,18 @@ class AcademyFragment : Fragment() {
 
     private fun setupRecycleView(){
         if (activity != null){
+            val academyAdapter = AcademyAdapter()
+
             val factory = ViewModelFactory.getInstance(requireActivity())
             val viewModel = ViewModelProvider(this, factory)[AcademyViewModel::class.java]
 
-            val academies: List<CourseEntity> = viewModel.getCourses()
-            val academyAdapter = AcademyAdapter().apply {
-                this.setAcademies(academies)
+            binding?.progressBar?.visibility = View.VISIBLE
+            viewModel.getCourses().observe(viewLifecycleOwner){ courses ->
+                binding?.progressBar?.visibility = View.GONE
+                academyAdapter.apply {
+                    setAcademies(courses)
+                    notifyDataSetChanged()
+                }
             }
 
             binding?.rvAcademy?.apply{

@@ -1,11 +1,11 @@
 package com.setianjay.academy.ui.bookmark
 
 import android.os.Bundle
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.core.app.ShareCompat
+import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.setianjay.academy.R
@@ -13,7 +13,6 @@ import com.setianjay.academy.adapter.BookmarkAdapter
 import com.setianjay.academy.data.CourseEntity
 import com.setianjay.academy.databinding.FragmentBookmarkBinding
 import com.setianjay.academy.ui.viewmodelfactory.ViewModelFactory
-import com.setianjay.academy.utils.DataDummy
 
 class BookmarkFragment : Fragment(), BookmarkAdapter.IOnBookmarkAdapter {
     private var _binding: FragmentBookmarkBinding? = null
@@ -33,13 +32,21 @@ class BookmarkFragment : Fragment(), BookmarkAdapter.IOnBookmarkAdapter {
         setupRecycleView()
     }
 
-    private fun setupRecycleView(){
+    private fun setupRecycleView() {
+        val bookmarkAdapter = BookmarkAdapter(this)
+
         val factory = ViewModelFactory.getInstance(requireActivity())
         val viewModel = ViewModelProvider(this, factory)[BookmarkViewModel::class.java]
-        val academies = viewModel.getBookmarks()
 
-        val bookmarkAdapter = BookmarkAdapter(this)
-        bookmarkAdapter.setAcademies(academies)
+        binding?.progressBar?.visibility = View.VISIBLE
+        viewModel.getBookmarks().observe(viewLifecycleOwner) { bookmarked ->
+            binding?.progressBar?.visibility = View.GONE
+            bookmarkAdapter.apply {
+                setAcademies(bookmarked)
+                notifyDataSetChanged()
+            }
+        }
+
 
         binding?.rvBookmark?.apply {
             layoutManager = LinearLayoutManager(context)
@@ -49,7 +56,7 @@ class BookmarkFragment : Fragment(), BookmarkAdapter.IOnBookmarkAdapter {
     }
 
     override fun onShareClick(academy: CourseEntity) {
-        if(activity != null){
+        if (activity != null) {
             val mimeType = "text/plain"
             ShareCompat.IntentBuilder
                 .from(requireActivity())

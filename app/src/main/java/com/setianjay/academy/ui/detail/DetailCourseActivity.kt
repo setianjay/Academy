@@ -2,6 +2,7 @@ package com.setianjay.academy.ui.detail
 
 import android.content.Intent
 import android.os.Bundle
+import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.DividerItemDecoration
@@ -36,9 +37,9 @@ class DetailCourseActivity : AppCompatActivity() {
     }
 
     private fun setupRecycleView() {
+        val detailCourseAdapter = DetailCourseAdapter()
         val factory = ViewModelFactory.getInstance(this)
         val viewModel = ViewModelProvider(this, factory)[DetailCourseViewModel::class.java]
-        val detailCourseAdapter = DetailCourseAdapter()
 
         val extras = intent.extras
 
@@ -47,14 +48,19 @@ class DetailCourseActivity : AppCompatActivity() {
             if (courseId != null) {
                 viewModel.setSelectedCourse(courseId)
 
-                val course = viewModel.getCourse()
-                populateCourse(course)
+                detailContentBinding.progressBar.visibility = View.VISIBLE
+                viewModel.getCourse().observe(this) { course ->
+                    detailContentBinding.progressBar.visibility = View.GONE
+                    populateCourse(course)
+                }
 
-                val modules = viewModel.getModules()
-                detailCourseAdapter.setModules(modules)
+                viewModel.getModules().observe(this) { modules ->
+                    detailCourseAdapter.setModules(modules)
+                }
 
                 detailContentBinding.rvModule.apply {
-                    val dividerItemDecoration = DividerItemDecoration(context, DividerItemDecoration.VERTICAL)
+                    val dividerItemDecoration =
+                        DividerItemDecoration(context, DividerItemDecoration.VERTICAL)
                     addItemDecoration(dividerItemDecoration)
                     isNestedScrollingEnabled = false
                     layoutManager = LinearLayoutManager(context)

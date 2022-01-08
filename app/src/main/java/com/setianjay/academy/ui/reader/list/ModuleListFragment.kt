@@ -44,18 +44,21 @@ class ModuleListFragment : Fragment(), MyAdapterClickListener {
         viewModel = ViewModelProvider(requireActivity())[CourseReaderViewModel::class.java]
         adapter = ModuleListAdapter(this)
 
-        val modules = viewModel.getModules()
-        populateRecycleView(modules)
+        binding?.progressBar?.visibility = View.VISIBLE
+        viewModel.getModules().observe(viewLifecycleOwner) { modules ->
+            populateRecycleView(modules)
+        }
     }
 
-    private fun populateRecycleView(modules: List<ModuleEntity>){
+    private fun populateRecycleView(modules: List<ModuleEntity>) {
         binding?.apply {
             progressBar.visibility = View.GONE
             adapter.setModules(modules)
             rvModule.layoutManager = LinearLayoutManager(context)
             rvModule.setHasFixedSize(true)
             rvModule.adapter = adapter
-            val dividerItemDecoration = DividerItemDecoration(requireContext(), DividerItemDecoration.VERTICAL)
+            val dividerItemDecoration =
+                DividerItemDecoration(requireContext(), DividerItemDecoration.VERTICAL)
             rvModule.addItemDecoration(dividerItemDecoration)
         }
     }

@@ -25,18 +25,22 @@ class ModuleContentFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        if (activity != null){
+        if (activity != null) {
             val viewModel = ViewModelProvider(requireActivity())[CourseReaderViewModel::class.java]
-            val content = viewModel.getSelectedModule()
-            populateWebView(content)
+
+            binding?.progressBar?.visibility = View.VISIBLE
+            viewModel.getSelectedModule().observe(viewLifecycleOwner) { content ->
+                binding?.progressBar?.visibility = View.GONE
+                populateWebView(content)
+            }
         }
     }
 
-    private fun populateWebView(content: ModuleEntity){
+    private fun populateWebView(content: ModuleEntity) {
         binding?.wbView?.loadData(content.contentEntity?.content ?: "", "text/html", "UTF-8")
     }
 
-    companion object{
+    companion object {
         val TAG: String = ModuleContentFragment::class.java.simpleName
 
         fun newInstance(): ModuleContentFragment = ModuleContentFragment()
