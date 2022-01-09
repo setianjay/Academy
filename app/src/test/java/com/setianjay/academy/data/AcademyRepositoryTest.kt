@@ -1,17 +1,24 @@
 package com.setianjay.academy.data
 
+import com.setianjay.academy.LiveDataUtil
 import com.setianjay.academy.data.source.remote.RemoteDataSource
 import com.setianjay.academy.utils.DataDummy
 import junit.framework.Assert.assertEquals
 import junit.framework.Assert.assertNotNull
+import org.junit.Rule
 import org.junit.Test
-import org.mockito.Mockito
-import org.mockito.Mockito.`when`
-import org.mockito.Mockito.verify
+import org.mockito.Mockito.*
+import androidx.arch.core.executor.testing.InstantTaskExecutorRule
+import com.nhaarman.mockitokotlin2.any
+import com.nhaarman.mockitokotlin2.doAnswer
+import com.nhaarman.mockitokotlin2.eq
 
 class AcademyRepositoryTest {
 
-    private val remoteDataSource = Mockito.mock(RemoteDataSource::class.java)
+    @get:Rule
+    val instantTaskExecutorRule = InstantTaskExecutorRule()
+
+    private val remoteDataSource = mock(RemoteDataSource::class.java)
     private val academyRepository = FakeAcademyRepository(remoteDataSource)
 
     //dummy data
@@ -25,46 +32,77 @@ class AcademyRepositoryTest {
 
     @Test
     fun getAllCourses(){
-        `when`(remoteDataSource.getAllCourse()).thenReturn(coursesResponse)
-        val courses = academyRepository.getAllCourses()
-        verify(remoteDataSource).getAllCourse()
+        doAnswer { invocation ->
+            (invocation.arguments[0] as RemoteDataSource.LoadCoursesCallback)
+                .onAllCoursesReceived(coursesResponse)
+            null
+        }.`when`(remoteDataSource).getAllCourse(any())
+
+        val courses = LiveDataUtil.getValue(academyRepository.getAllCourses())
+        verify(remoteDataSource).getAllCourse(any())
         assertNotNull(courses)
         assertEquals(coursesResponse.size.toLong(), courses.size.toLong())
     }
 
     @Test
     fun getAllModules(){
-        `when`(remoteDataSource.getAllModules(courseId)).thenReturn(modulesResponse)
-        val modules = academyRepository.getAllModules(courseId)
-        verify(remoteDataSource).getAllModules(courseId)
+        doAnswer { invocation ->
+            (invocation.arguments[1] as RemoteDataSource.LoadModulesCallback).
+            onAllModulesReceived(modulesResponse)
+            null
+        }.`when`(remoteDataSource).getAllModules(eq(courseId), any())
+
+        val modules = LiveDataUtil.getValue(academyRepository.getAllModules(courseId))
+        verify(remoteDataSource).getAllModules(eq(courseId), any())
         assertNotNull(modules)
         assertEquals(modulesResponse.size.toLong(), modules.size.toLong())
     }
 
     @Test
     fun getBookmarkedCourses(){
-        `when`(remoteDataSource.getAllCourse()).thenReturn(coursesResponse)
-        val bookmarkedCourses = academyRepository.getBookmarkedCourses()
-        verify(remoteDataSource).getAllCourse()
+        doAnswer { invocation ->
+            (invocation.arguments[0] as RemoteDataSource.LoadCoursesCallback).
+            onAllCoursesReceived(coursesResponse)
+            null
+        }.`when`(remoteDataSource).getAllCourse(any())
+
+        val bookmarkedCourses = LiveDataUtil.getValue(academyRepository.getBookmarkedCourses())
+        verify(remoteDataSource).getAllCourse(any())
         assertNotNull(bookmarkedCourses)
         assertEquals(coursesResponse.size.toLong(), bookmarkedCourses.size.toLong())
     }
 
     @Test
     fun getDetailCourse(){
-        `when`(remoteDataSource.getAllCourse()).thenReturn(coursesResponse)
-        val detailCourse = academyRepository.getDetailCourse(courseId)
-        verify(remoteDataSource).getAllCourse()
+        doAnswer { invocation ->
+            (invocation.arguments[0] as RemoteDataSource.LoadCoursesCallback).
+            onAllCoursesReceived(coursesResponse)
+            null
+        }.`when`(remoteDataSource).getAllCourse(any())
+
+        val detailCourse = LiveDataUtil.getValue(academyRepository.getDetailCourse(courseId))
+        verify(remoteDataSource).getAllCourse(any())
         assertNotNull(detailCourse)
         assertEquals(coursesResponse[0].title, detailCourse.title)
     }
 
     @Test
     fun getContentModule(){
-        `when`(remoteDataSource.getAllModules(courseId)).thenReturn(modulesResponse)
-        `when`(remoteDataSource.getContent(moduleId)).thenReturn(contentResponse)
-        val content = academyRepository.getContentModule(courseId, moduleId)
-        verify(remoteDataSource).getContent(moduleId)
+        doAnswer { invocation ->
+            (invocation.arguments[1] as RemoteDataSource.LoadModulesCallback).
+            onAllModulesReceived(modulesResponse)
+            null
+        }.`when`(remoteDataSource).getAllModules(eq(courseId), any())
+
+        doAnswer { invocation ->
+            (invocation.arguments[1] as RemoteDataSource.LoadContentModule).
+            onContentModuleReceived(contentResponse)
+            null
+        }.`when`(remoteDataSource).getContent(eq(moduleId), any())
+
+        val content = LiveDataUtil.getValue(academyRepository.getContentModule(courseId, moduleId))
+        verify(remoteDataSource).getAllModules(eq(courseId), any())
+        verify(remoteDataSource).getContent(eq(moduleId), any())
         assertNotNull(content)
         assertEquals(contentResponse.content, content.contentEntity?.content)
     }
