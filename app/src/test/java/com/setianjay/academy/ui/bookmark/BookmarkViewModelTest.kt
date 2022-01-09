@@ -1,11 +1,15 @@
 package com.setianjay.academy.ui.bookmark
 
+import androidx.arch.core.executor.testing.InstantTaskExecutorRule
+import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.Observer
 import com.setianjay.academy.data.CourseEntity
 import com.setianjay.academy.data.source.remote.repository.AcademyRepository
 import com.setianjay.academy.utils.DataDummy
 import org.junit.Assert.*
 
 import org.junit.Before
+import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.mockito.Mock
@@ -17,8 +21,14 @@ import org.mockito.junit.MockitoJUnitRunner
 class BookmarkViewModelTest {
     private lateinit var viewModel: BookmarkViewModel
 
+    @get:Rule
+    var instantTaskExecutorRule = InstantTaskExecutorRule()
+
     @Mock
     private lateinit var academyRepository: AcademyRepository
+
+    @Mock
+    private lateinit var observer: Observer<List<CourseEntity>>
 
     private val dummyCourses = DataDummy.generateDummyCourses()
 
@@ -32,10 +42,16 @@ class BookmarkViewModelTest {
      * */
     @Test
     fun getBookmarks() {
-        `when`(academyRepository.getBookmarkedCourses()).thenReturn(dummyCourses as ArrayList<CourseEntity>)
-        val bookmarks = viewModel.getBookmarks()
+        val bookmarkResult = MutableLiveData<List<CourseEntity>>()
+        bookmarkResult.value = dummyCourses
+
+        `when`(academyRepository.getBookmarkedCourses()).thenReturn(bookmarkResult)
+        val bookmarks = viewModel.getBookmarks().value
         verify(academyRepository).getBookmarkedCourses()
         assertNotNull(bookmarks)
-        assertEquals(dummyCourses.size, bookmarks.size)
+        assertEquals(dummyCourses.size, bookmarks?.size)
+
+        viewModel.getBookmarks().observeForever(observer)
+        verify(observer).onChanged(dummyCourses)
     }
 }
